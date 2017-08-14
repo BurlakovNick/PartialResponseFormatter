@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 
@@ -8,61 +9,70 @@ namespace PartialResponseFormatter
 {
     public class PartialResponseFormatter : IPartialResponseFormatter
     {
-        //todo: doesn't work with collections in root
-        public Dictionary<string, object> Format(object obj, ResponseSpecification responseSpecification)
+        public object Format(object obj, ResponseSpecification responseSpecification)
         {
-            return Format(obj, responseSpecification.Fields);
+            return Traverse(obj, responseSpecification.Fields);
         }
 
         //todo: slow, i know. IL-code will arrive soon
-        private Dictionary<string, object> Format(object obj, Field[] fields)
+        private static object Traverse(object obj, Field[] fields)
         {
-            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).ToDictionary(p => p.Name);
+            if (obj == null)
+            {
+                return null;
+            }
+            
+            if (fields.IsEmpty())
+            {
+                return obj;
+            }
+
+            var dictionaryObj = obj as IDictionary;
+            if (dictionaryObj != null)
+            {
+                return TraverseDictionary(dictionaryObj, fields);
+            }
+
+            var enumerableObj = obj as IEnumerable;
+            if (enumerableObj != null)
+            {
+                return TraverseEnumerable(enumerableObj, fields);
+            }
+
             var result = new Dictionary<string, object>();
             foreach (var field in fields)
             {
-                PropertyInfo property;
-                if (!properties.TryGetValue(field.Name, out property))
+                var property = ReflectionProvider.GetPropertyValue(obj, field.Name);
+                if (property == null)
                 {
-                    throw new InvalidOperationException();
+                    continue;
                 }
-
-                var value = property.GetValue(obj);
+                
                 var subfields = field.Fields;
-                if (subfields.Length > 0)
+                result.Add(field.Name, Traverse(property, subfields));
+            }
+            
+            return result;
+        }
+
+        private static List<object> TraverseEnumerable(IEnumerable enumerableObj, Field[] fields)
+        {
+            return enumerableObj
+                .Cast<object>()
+                .Select(element => Traverse(element, fields))
+                .Where(formattedElement => formattedElement != null)
+                .ToList();
+        }
+
+        private static Dictionary<object, object> TraverseDictionary(IDictionary dictionaryObj, Field[] fields)
+        {
+            var result = new Dictionary<object, object>();
+            foreach (DictionaryEntry kvp in dictionaryObj)
+            {
+                var formattedElement = Traverse(kvp.Value, fields);
+                if (formattedElement != null)
                 {
-                    var propertyType = property.PropertyType;
-                    if (propertyType.GetInterface("IDictionary") != null)
-                    {
-                        var dictionary = (IDictionary)value;
-                        var elements = new Dictionary<object, object>();
-                        //todo: check if type is simple
-                        foreach (DictionaryEntry keyValuePair in dictionary)
-                        {
-                            var formattedValue = Format(keyValuePair.Value, subfields);
-                            elements.Add(keyValuePair.Key, formattedValue);
-                        }
-                        result.Add(field.Name, elements);
-                    }
-                    else
-                    if (propertyType.GetInterface("IEnumerable") != null)
-                    {
-                        var array = (IEnumerable)value;
-                        var elements = new List<object>();
-                        foreach (var arrayElement in array)
-                        {
-                            elements.Add(Format(arrayElement, subfields));
-                        }
-                        result.Add(field.Name, elements);
-                    }
-                    else
-                    {
-                        result.Add(field.Name, Format(value, subfields));
-                    }
-                }
-                else
-                {
-                    result.Add(field.Name, value);
+                    result.Add(kvp.Key, formattedElement);
                 }
             }
             return result;

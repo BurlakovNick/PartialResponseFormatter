@@ -7,7 +7,7 @@ Library doesn't depend on any specific stack for building API (WebApi, ServiceSt
 ## Roadmap
 
 - [x] Prototype and github repo
-- [ ] Simple and slow response formatter with reflection
+- [x] Simple and slow response formatter with reflection
 - [ ] FluentAPI for fields declaration
 - [ ] Build partial response fields specification from attributes with reflection
 - [ ] Fields mapping validation (when available response fields are known)

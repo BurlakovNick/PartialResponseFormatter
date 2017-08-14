@@ -4,6 +4,6 @@ namespace PartialResponseFormatter
 {
     public interface IPartialResponseFormatter
     {
-        Dictionary<string, object> Format(object obj, ResponseSpecification responseSpecification);
+        object Format(object obj, ResponseSpecification responseSpecification);
     }
 }
