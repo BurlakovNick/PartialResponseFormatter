@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace RestPartialResponse.Test.Tests
+namespace PartialResponseFormatter.Tests.Tests
 {
     [TestFixture]
     public class PartialResponseFormatterTest

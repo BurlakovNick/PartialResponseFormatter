@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RestPartialResponse
+namespace PartialResponseFormatter
 {
     //todo: to string builder
     public class UrlParameterResponseSpecificationSerializer : IResponseSpecificationSerializer

@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace RestPartialResponse.Test.UsageExample
+namespace PartialResponseFormatter.Tests.UsageExample
 {
     [TestFixture]
     public class PartialServerResponseExample

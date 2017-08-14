@@ -1,4 +1,4 @@
-﻿namespace RestPartialResponse
+﻿namespace PartialResponseFormatter
 {
     public interface IResponseSpecificationFactory
     {

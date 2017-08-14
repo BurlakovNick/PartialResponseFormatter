@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace RestPartialResponse
+namespace PartialResponseFormatter
 {
     public class PartialResponseFormatter : IPartialResponseFormatter
     {

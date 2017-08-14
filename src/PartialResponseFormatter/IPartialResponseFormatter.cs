@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RestPartialResponse
+namespace PartialResponseFormatter
 {
     public interface IPartialResponseFormatter
     {
