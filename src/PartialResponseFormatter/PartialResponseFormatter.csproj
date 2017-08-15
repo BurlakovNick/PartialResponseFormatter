@@ -43,13 +43,13 @@
     <Compile Include="EnumerableExtentions.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="IPartialResponseFormatter.cs" />
-    <Compile Include="IResponseSpecificationFactory.cs" />
     <Compile Include="IResponseSpecificationSerializer.cs" />
     <Compile Include="MapFromContractAttribute.cs" />
     <Compile Include="PartialResponseFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionProvider.cs" />
     <Compile Include="ResponseSpecification.cs" />
+    <Compile Include="ResponseSpecificationBuilder.cs" />
     <Compile Include="ResponseSpecificationFactory.cs" />
     <Compile Include="UrlParameterResponseSpecificationSerializer.cs" />
   </ItemGroup>

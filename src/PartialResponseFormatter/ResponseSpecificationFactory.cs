@@ -5,10 +5,15 @@ using System.Reflection;
 
 namespace PartialResponseFormatter
 {
-    public class ResponseSpecificationFactory : IResponseSpecificationFactory
+    public static class ResponseSpecificationFactory
     {
+        public static ResponseSpecificationBuilder Create()
+        {
+            return new ResponseSpecificationBuilder();
+        }
+        
         //todo: doesn't work with collections in root
-        public ResponseSpecification Create<T>()
+        public static ResponseSpecification Create<T>()
         {
             var type = typeof(T);
             return new ResponseSpecification
@@ -17,7 +22,7 @@ namespace PartialResponseFormatter
             };
         }
 
-        private Field[] SelectFields(Type type)
+        private static Field[] SelectFields(Type type)
         {
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var fields = new List<Field>();
@@ -28,7 +33,7 @@ namespace PartialResponseFormatter
             return fields.ToArray();
         }
 
-        private Field BuildField(PropertyInfo property)
+        private static Field BuildField(PropertyInfo property)
         {
             var propertyType = property.PropertyType;
             if (IsSimpleType(propertyType))
@@ -61,7 +66,7 @@ namespace PartialResponseFormatter
             return CreateField(property.Name, SelectFields(propertyType));
         }
 
-        private bool IsSimpleType(Type type)
+        private static bool IsSimpleType(Type type)
         {
             return type == typeof(string) ||
                    type.IsPrimitive ||
@@ -71,7 +76,7 @@ namespace PartialResponseFormatter
                    type == typeof(DateTime);
         }
 
-        private Field CreateField(string name, Field[] subFields = null)
+        private static Field CreateField(string name, Field[] subFields = null)
         {
             return new Field
             {

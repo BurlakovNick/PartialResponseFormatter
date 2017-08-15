@@ -17,18 +17,16 @@ namespace PartialResponseFormatter.Tests.UsageExample
         
         public class Client
         {
-            private readonly ResponseSpecificationFactory responseSpecificationFactory;
             private readonly Server server;
 
             public Client()
             {
-                responseSpecificationFactory = new ResponseSpecificationFactory();
                 server = new Server();
             }
             
             public ClientProspectiveSaleModel Select(Guid saleId)
             {
-                var responseSpecification = responseSpecificationFactory.Create<ClientProspectiveSaleModel>();
+                var responseSpecification = ResponseSpecification.Create<ClientProspectiveSaleModel>();
                 var response = server.Select(saleId, responseSpecification);
                 return JsonConvert.DeserializeObject<ClientProspectiveSaleModel>(response);
             }

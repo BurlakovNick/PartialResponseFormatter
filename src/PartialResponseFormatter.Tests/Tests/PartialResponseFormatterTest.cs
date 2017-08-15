@@ -22,7 +22,7 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestFormatInt()
         {
             const int expected = 5;
-            var actual = formatter.Format(expected, new ResponseSpecification {Fields = new Field[0]});
+            var actual = formatter.Format(expected, ResponseSpecification.Empty);
             actual.Should().Be(expected);
         }
 
@@ -30,21 +30,21 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestFormatString()
         {
             const string expected = "abacaba";
-            var actual = formatter.Format(expected, new ResponseSpecification {Fields = new Field[0]});
+            var actual = formatter.Format(expected, ResponseSpecification.Empty);
             actual.Should().Be(expected);
         }
 
         [Test]
         public void TestFormatNull()
         {
-            var actual = formatter.Format(null, new ResponseSpecification {Fields = new Field[0]});
+            var actual = formatter.Format(null, ResponseSpecification.Empty);
             actual.Should().BeNull();
         }
 
         [Test]
         public void TestFormatEmptyArray()
         {
-            var actual = formatter.Format(new string[0], new ResponseSpecification {Fields = new Field[0]});
+            var actual = formatter.Format(new string[0], ResponseSpecification.Empty);
             (actual as IEnumerable).Should().BeEmpty();
         }
 
@@ -52,7 +52,7 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestFormatArray()
         {
             var array = new[] {new {A = "a", B = "b"}, new {A = "aa", B = "bb"}};
-            var actual = formatter.Format(array, new ResponseSpecification {Fields = new[] {new Field {Name = "A"},}});
+            var actual = formatter.Format(array, ResponseSpecification.Field("A"));
             var expected = new[] {new {A = "a"}, new {A = "aa"}};
             AssertExpectedContract(actual, expected);
         }
@@ -60,8 +60,7 @@ namespace PartialResponseFormatter.Tests.Tests
         [Test]
         public void TestFormatEmptyDictionary()
         {
-            var actual = formatter.Format(new Dictionary<string, string>(),
-                new ResponseSpecification {Fields = new Field[0]});
+            var actual = formatter.Format(new Dictionary<string, string>(), ResponseSpecification.Empty);
             (actual as IDictionary).Should().BeEmpty();
         }
 
@@ -73,8 +72,7 @@ namespace PartialResponseFormatter.Tests.Tests
                 {"item1", new {A = "a", B = "b"}},
                 {"item2", new {A = "aa", B = "bb"}}
             };
-            var actual = formatter.Format(dictionary,
-                new ResponseSpecification {Fields = new[] {new Field {Name = "A"},}});
+            var actual = formatter.Format(dictionary, ResponseSpecification.Field("A"));
             var expected = new Dictionary<string, object>
             {
                 {"item1", new {A = "a"}},
@@ -87,7 +85,7 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestFormatPropertyNameCaseNotMatters()
         {
             var array = new {A = "a"};
-            var actual = formatter.Format(array, new ResponseSpecification {Fields = new[] {new Field {Name = "a"},}});
+            var actual = formatter.Format(array, ResponseSpecification.Field("a"));
             var expected = new {a = "a"};
             AssertExpectedContract(actual, expected);
         }
@@ -96,14 +94,12 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestFormatNested()
         {
             var array = new {A = "a", B = "b", C = new {D = "d", E = "e"}};
-            var actual = formatter.Format(array, new ResponseSpecification
-            {
-                Fields = new[]
-                {
-                    new Field {Name = "A"},
-                    new Field {Name = "C", Fields = new[] {new Field {Name = "E"},}}
-                }
-            });
+            var actual = formatter.Format(array,
+                ResponseSpecification
+                    .Field("A")
+                    .Field("C",
+                        _ => _.Field("E"))
+            );
             var expected = new {A = "a", C = new {E = "e"}};
             AssertExpectedContract(actual, expected);
         }
@@ -157,58 +153,24 @@ namespace PartialResponseFormatter.Tests.Tests
                     {"item2", nested2}
                 }
             };
-            var nestedFields = new Field[]
-            {
-                new Field
-                {
-                    Name = "X"
-                },
-                new Field
-                {
-                    Name = "Z"
-                }
-            };
-            var responseSpecification = new ResponseSpecification
-            {
-                Fields = new Field[]
-                {
-                    new Field
-                    {
-                        Name = "A"
-                    },
-                    new Field
-                    {
-                        Name = "D"
-                    },
-                    new Field
-                    {
-                        Name = "C"
-                    },
-                    new Field
-                    {
-                        Name = "Array",
-                        Fields = nestedFields
-                    },
-                    new Field
-                    {
-                        Name = "List",
-                        Fields = nestedFields
-                    },
-                    new Field
-                    {
-                        Name = "Nested",
-                        Fields = nestedFields
-                    },
-                    new Field
-                    {
-                        Name = "Dictionary",
-                        Fields = nestedFields
-                    },
-                }
-            };
+
+            var nestedFields = ResponseSpecification.Field("X").Field("Z");
+            var responseSpecification = ResponseSpecification
+                .Field("A")
+                .Field("D")
+                .Field("C")
+                .Field("Array", _ => _
+                    .Field("X")
+                    .Field("Z")
+                )
+                .Field("List", _ => _
+                    .Field("X")
+                    .Field("Z")
+                )
+                .Field("Nested", _ => nestedFields)
+                .Field("Dictionary", _ => nestedFields);
 
             var actual = formatter.Format(testContract, responseSpecification);
-            var actualSerialization = JsonConvert.SerializeObject((object) actual, Formatting.Indented);
 
             var nestedExpected1 = new
             {

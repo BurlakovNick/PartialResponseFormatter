@@ -7,13 +7,6 @@ namespace PartialResponseFormatter.Tests.Tests
     [TestFixture]
     public class ResponseSpecificationFactoryTest
     {
-        private ResponseSpecificationFactory responseSpecificationFactory;
-
-        [SetUp]
-        public void SetUp()
-        {
-            responseSpecificationFactory = new ResponseSpecificationFactory();
-        }
         
         public class SimpleType
         {
@@ -23,7 +16,7 @@ namespace PartialResponseFormatter.Tests.Tests
         [Test]
         public void TestCreateForSimpleType()
         {
-            var actual = responseSpecificationFactory.Create<SimpleType>();
+            var actual = ResponseSpecification.Create<SimpleType>();
             actual.ShouldBeEquivalentTo(new ResponseSpecification
             {
                 Fields = new[]
@@ -50,7 +43,7 @@ namespace PartialResponseFormatter.Tests.Tests
         [Test]
         public void TestCreateForComplexType()
         {
-            var actual = responseSpecificationFactory.Create<ComplexType>();
+            var actual = ResponseSpecification.Create<ComplexType>();
             actual.ShouldBeEquivalentTo(new ResponseSpecification
             {
                 Fields = new[]
