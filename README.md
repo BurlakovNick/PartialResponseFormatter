@@ -9,7 +9,7 @@ Library doesn't depend on any specific stack for building API (WebApi, ServiceSt
 - [x] Prototype and github repo
 - [x] Simple and slow response formatter with reflection
 - [x] FluentAPI for fields declaration
-- [ ] Build partial response fields specification from attributes with reflection
+- [x] Build partial response fields specification from attributes with reflection
 - [ ] Fields mapping validation (when available response fields are known)
 - [ ] Ad-hoc field specification serialization for passing as URL parameter
 - [ ] Fast response formatting with IL-code emitting
