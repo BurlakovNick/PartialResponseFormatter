@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace PartialResponseFormatter.Tests.Tests
@@ -118,6 +119,56 @@ namespace PartialResponseFormatter.Tests.Tests
         {
             var actual = ResponseSpecification.Create<NestedType[][]>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
+        }
+
+        public class CustomNamesType
+        {
+            public string A { get; set; }
+            
+            [JsonProperty]
+            public string B { get; set; }
+            
+            [JsonProperty(PropertyName = "")]
+            public string C { get; set; }
+            
+            [JsonProperty(PropertyName = "custom1")]
+            public string D { get; set; }
+
+            [PartialResponseProperty]
+            public string E { get; set; }
+            
+            [PartialResponseProperty(PropertyName = "")]
+            public string F { get; set; }
+            
+            [PartialResponseProperty(PropertyName = "custom2")]
+            public string G { get; set; }
+            
+            [JsonProperty(PropertyName = "")]
+            [PartialResponseProperty(PropertyName = "custom3")]
+            public string H { get; set; }
+            
+            [JsonProperty(PropertyName = "custom4")]
+            [PartialResponseProperty(PropertyName = "wrong")]
+            public string I { get; set; }
+        }
+        
+        [Test]
+        public void TestContractWithCustomNames()
+        {
+            var actual = ResponseSpecification.Create<CustomNamesType>();
+            var expected = ResponseSpecification
+                .Field("A")
+                .Field("B")
+                .Field("C")
+                .Field("custom1")
+                .Field("E")
+                .Field("F")
+                .Field("custom2")
+                .Field("custom3")
+                .Field("custom4")
+                .Create();
+            
+            actual.ShouldBeEquivalentTo(expected);
         }
     }
 }

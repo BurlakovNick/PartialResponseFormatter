@@ -51,27 +51,28 @@ namespace PartialResponseFormatter
         private static Field BuildField(PropertyInfo property)
         {
             var propertyType = property.PropertyType;
+            var propertyName = FieldNameProvider.GetPropertyName(property);
+            
             if (IsSimpleType(propertyType))
             {
-                //todo: probably should use name from some attribute
-                return CreateField(property.Name);
+                return CreateField(propertyName);
             }
             
             var dictionaryInterface = FindDictionaryInterface(propertyType);
             if (dictionaryInterface != null)
             {
                 var arguments = dictionaryInterface.GetGenericArguments();
-                return CreateField(property.Name, SelectFields(arguments[1]));
+                return CreateField(propertyName, SelectFields(arguments[1]));
             }
             
             var enumerableInterface = FindEnumerableInterface(propertyType);
             if (enumerableInterface != null)
             {
                 var arguments = enumerableInterface.GetGenericArguments();
-                return CreateField(property.Name, SelectFields(arguments[0]));
+                return CreateField(propertyName, SelectFields(arguments[0]));
             }
 
-            return CreateField(property.Name, SelectFields(propertyType));
+            return CreateField(propertyName, SelectFields(propertyType));
         }
 
         //todo: optimize all reflection
@@ -95,7 +96,7 @@ namespace PartialResponseFormatter
                                      x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
                 );
         }
-
+        
         private static bool IsSimpleType(Type type)
         {
             return type == typeof(string) ||
