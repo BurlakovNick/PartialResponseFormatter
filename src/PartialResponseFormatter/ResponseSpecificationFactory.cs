@@ -12,7 +12,6 @@ namespace PartialResponseFormatter
             return new ResponseSpecificationBuilder();
         }
         
-        //todo: doesn't work with collections in root
         public static ResponseSpecification Create<T>()
         {
             var type = typeof(T);
@@ -24,13 +23,29 @@ namespace PartialResponseFormatter
 
         private static Field[] SelectFields(Type type)
         {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var fields = new List<Field>();
-            foreach (var property in properties)
+            if (IsSimpleType(type))
             {
-                fields.Add(BuildField(property));
+                return new Field[0];
             }
-            return fields.ToArray();
+            
+            var dictionaryInterface = FindDictionaryInterface(type);
+            if (dictionaryInterface != null)
+            {
+                var arguments = dictionaryInterface.GetGenericArguments();
+                return SelectFields(arguments[1]);
+            }
+            
+            var enumerableInterface = FindEnumerableInterface(type);
+            if (enumerableInterface != null)
+            {
+                var arguments = enumerableInterface.GetGenericArguments();
+                return SelectFields(arguments[0]);
+            }
+
+            return type
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(BuildField)
+                .ToArray();
         }
 
         private static Field BuildField(PropertyInfo property)
@@ -38,25 +53,18 @@ namespace PartialResponseFormatter
             var propertyType = property.PropertyType;
             if (IsSimpleType(propertyType))
             {
+                //todo: probably should use name from some attribute
                 return CreateField(property.Name);
             }
-
-            var interfaces = propertyType.GetInterfaces();
             
-            var dictionaryInterface = interfaces
-                .FirstOrDefault(x => x.IsGenericType &&
-                                     x.GetGenericTypeDefinition() == typeof(IDictionary<,>)
-                );
+            var dictionaryInterface = FindDictionaryInterface(propertyType);
             if (dictionaryInterface != null)
             {
                 var arguments = dictionaryInterface.GetGenericArguments();
                 return CreateField(property.Name, SelectFields(arguments[1]));
             }
             
-            var enumerableInterface = interfaces
-                .FirstOrDefault(x => x.IsGenericType &&
-                                     x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-                );
+            var enumerableInterface = FindEnumerableInterface(propertyType);
             if (enumerableInterface != null)
             {
                 var arguments = enumerableInterface.GetGenericArguments();
@@ -64,6 +72,28 @@ namespace PartialResponseFormatter
             }
 
             return CreateField(property.Name, SelectFields(propertyType));
+        }
+
+        //todo: optimize all reflection
+        private static Type FindDictionaryInterface(Type type)
+        {
+            var interfaces = type.GetInterfaces();
+
+            return interfaces
+                .FirstOrDefault(x => x.IsGenericType &&
+                                     x.GetGenericTypeDefinition() == typeof(IDictionary<,>)
+                );
+        }
+        
+        //todo: optimize all reflection
+        private static Type FindEnumerableInterface(Type type)
+        {
+            var interfaces = type.GetInterfaces();
+
+            return interfaces
+                .FirstOrDefault(x => x.IsGenericType &&
+                                     x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                );
         }
 
         private static bool IsSimpleType(Type type)
