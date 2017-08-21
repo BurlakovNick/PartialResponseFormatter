@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace PartialResponseFormatter
+﻿namespace PartialResponseFormatter
 {
     public interface IPartialResponseFormatter
     {

@@ -9,16 +9,16 @@ namespace PartialResponseFormatter
     {
         private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertiesByType = new ConcurrentDictionary<Type, PropertyInfo[]>();
 
-        public static object GetPropertyValue(object obj, string propertyName)
+        public static object GetPropertyValue(object obj, string fieldName)
         {
-            if (obj == null || string.IsNullOrEmpty(propertyName))
+            if (obj == null || string.IsNullOrEmpty(fieldName))
             {
                 return obj;
             }
             
             var property = PropertiesByType
                 .GetOrAdd(obj.GetType(), t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                .FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
+                .FirstOrDefault(p => p.Name.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase));
 
             return property?.GetValue(obj);
         }

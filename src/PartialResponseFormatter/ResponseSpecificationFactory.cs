@@ -42,6 +42,7 @@ namespace PartialResponseFormatter
                 return SelectFields(arguments[0]);
             }
 
+            //todo: validate duplicates
             return type
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Select(BuildField)

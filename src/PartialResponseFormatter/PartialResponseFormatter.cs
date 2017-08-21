@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Reflection;
 
 namespace PartialResponseFormatter
 {
@@ -42,6 +39,7 @@ namespace PartialResponseFormatter
             var result = new Dictionary<string, object>();
             foreach (var field in fields)
             {
+                //todo: replace field.Name with corresponding property name (not always equals)
                 var property = ReflectionProvider.GetPropertyValue(obj, field.Name);
                 if (property == null)
                 {

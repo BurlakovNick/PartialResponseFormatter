@@ -65,6 +65,7 @@ namespace PartialResponseFormatter
                 currentBuilder = currentBuilder.parentBuilder;
             }
 
+            //todo: validate duplicates
             fields.Reverse();
             
             return new ResponseSpecification
