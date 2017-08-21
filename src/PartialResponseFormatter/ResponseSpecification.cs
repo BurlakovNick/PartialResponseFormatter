@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 
 namespace PartialResponseFormatter
 {
@@ -26,6 +28,18 @@ namespace PartialResponseFormatter
             return ResponseSpecificationFactory.Create<T>();
         }
 
+        public static bool CheckClientMatchesServer<TClientData, TServerData>(out MissingField[] missingFields)
+        {
+            missingFields = new MissingField[0];
+            return missingFields.Length == 0;
+        }
+        
+        public static bool CheckClientMatchesServer<TServerData>(ResponseSpecification clientResponseSpecification, out MissingField[] missingFields)
+        {
+            missingFields = new MissingField[0];
+            return missingFields.Length == 0;
+        }
+        
         public static implicit operator Field[](ResponseSpecification specification)
         {
             return specification.Fields;

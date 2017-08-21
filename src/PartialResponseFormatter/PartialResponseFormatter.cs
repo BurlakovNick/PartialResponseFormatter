@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,66 +9,79 @@ namespace PartialResponseFormatter
     {
         public object Format(object obj, ResponseSpecification responseSpecification)
         {
-            return Traverse(obj, responseSpecification.Fields);
-        }
-
-        //todo: slow, i know. IL-code will arrive soon
-        private static object Traverse(object obj, Field[] fields)
-        {
             if (obj == null)
             {
                 return null;
             }
-            
-            if (fields.IsEmpty())
+
+            var treeNode = ObjectTreeTraverser.Traverse(obj.GetType());
+            return Traverse(obj, responseSpecification.Fields, treeNode);
+        }
+
+        private static object Traverse(object obj, Field[] fields, TreeNode treeNode)
+        {
+            switch (treeNode)
+            {
+                case null:
+                    return null;
+                case EmptyTreeNode _:
+                    return obj;
+                case ObjectTreeNode objectTree:
+                    return TraverseObject(obj, fields, objectTree);
+                case CollectionTreeNode collection:
+                    var enumerableObj = (IEnumerable)obj;
+                    return TraverseEnumerable(enumerableObj, fields, collection.Items);
+                case DictionaryTreeNode dictionary:
+                    var dictionaryObj = (IDictionary)obj;
+                    return TraverseDictionary(dictionaryObj, fields, dictionary.Items);
+                default:
+                    throw new ArgumentException($"Type {treeNode.GetType().Name} is not supported");
+            }
+        }
+
+        //todo: slow, i know. IL-code will arrive soon
+        private static object TraverseObject(object obj, Field[] fields, ObjectTreeNode objectTreeNode)
+        {
+            if (fields.IsNullOrEmpty())
             {
                 return obj;
             }
-
-            var dictionaryObj = obj as IDictionary;
-            if (dictionaryObj != null)
-            {
-                return TraverseDictionary(dictionaryObj, fields);
-            }
-
-            var enumerableObj = obj as IEnumerable;
-            if (enumerableObj != null)
-            {
-                return TraverseEnumerable(enumerableObj, fields);
-            }
-
+            
             var result = new Dictionary<string, object>();
             foreach (var field in fields)
             {
-                //todo: replace field.Name with corresponding property name (not always equals)
-                var property = ReflectionProvider.GetPropertyValue(obj, field.Name);
+                var property = objectTreeNode.FindProperty(field.Name);
                 if (property == null)
                 {
                     continue;
                 }
-                
+
+                var value = property.GetValue(obj);
+
                 var subfields = field.Fields;
-                result.Add(field.Name, Traverse(property, subfields));
+                //todo: clr name important for correct to object mapping, but response object is better for serialization
+                //todo: decisions, decions...
+                result.Add(property.ClrName, Traverse(value, subfields, property.Tree));
             }
-            
+
             return result;
         }
 
-        private static List<object> TraverseEnumerable(IEnumerable enumerableObj, Field[] fields)
+        private static List<object> TraverseEnumerable(IEnumerable enumerableObj, Field[] fields, TreeNode treeNode)
         {
             return enumerableObj
                 .Cast<object>()
-                .Select(element => Traverse(element, fields))
+                .Select(element => Traverse(element, fields, treeNode))
                 .Where(formattedElement => formattedElement != null)
                 .ToList();
         }
 
-        private static Dictionary<object, object> TraverseDictionary(IDictionary dictionaryObj, Field[] fields)
+        private static Dictionary<object, object> TraverseDictionary(IDictionary dictionaryObj, Field[] fields, TreeNode treeNode)
         {
             var result = new Dictionary<object, object>();
             foreach (DictionaryEntry kvp in dictionaryObj)
             {
-                var formattedElement = Traverse(kvp.Value, fields);
+                var formattedElement = Traverse(kvp.Value, fields, treeNode);
                 if (formattedElement != null)
                 {
                     result.Add(kvp.Key, formattedElement);

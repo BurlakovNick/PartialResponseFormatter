@@ -40,12 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionTreeNode.cs" />
+    <Compile Include="DictionaryTreeNode.cs" />
+    <Compile Include="EmptyTreeNode.cs" />
     <Compile Include="EnumerableExtentions.cs" />
     <Compile Include="Field.cs" />
-    <Compile Include="FieldNameProvider.cs" />
     <Compile Include="IPartialResponseFormatter.cs" />
     <Compile Include="IResponseSpecificationSerializer.cs" />
     <Compile Include="MapFromContractAttribute.cs" />
+    <Compile Include="MissingField.cs" />
+    <Compile Include="ObjectProperty.cs" />
+    <Compile Include="ObjectTreeNode.cs" />
+    <Compile Include="ObjectTreeTraverser.cs" />
     <Compile Include="PartialResponseFormatter.cs" />
     <Compile Include="PartialResponsePropertyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +59,7 @@
     <Compile Include="ResponseSpecification.cs" />
     <Compile Include="ResponseSpecificationBuilder.cs" />
     <Compile Include="ResponseSpecificationFactory.cs" />
+    <Compile Include="TreeNode.cs" />
     <Compile Include="UrlParameterResponseSpecificationSerializer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

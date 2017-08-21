@@ -64,19 +64,30 @@ namespace PartialResponseFormatter.Tests.Tests
             (actual as IDictionary).Should().BeEmpty();
         }
 
+        public class ABClass
+        {
+            public string A { get; set; }
+            public string B { get; set; }
+        }
+        
+        public class AClass
+        {
+            public string A { get; set; }
+        }
+        
         [Test]
         public void TestFormatDictionary()
         {
-            var dictionary = new Dictionary<string, object>
+            var dictionary = new Dictionary<string, ABClass>
             {
-                {"item1", new {A = "a", B = "b"}},
-                {"item2", new {A = "aa", B = "bb"}}
+                {"item1", new ABClass{A = "a", B = "b"}},
+                {"item2", new ABClass{A = "aa", B = "bb"}}
             };
-            var actual = formatter.Format(dictionary, ResponseSpecification.Field("A"));
-            var expected = new Dictionary<string, object>
+            var actual = formatter.Format(dictionary, ResponseSpecification.Field("a"));
+            var expected = new Dictionary<string, AClass>
             {
-                {"item1", new {A = "a"}},
-                {"item2", new {A = "aa"}}
+                {"item1", new AClass{A = "a"}},
+                {"item2", new AClass{A = "aa"}}
             };
             AssertExpectedContract(actual, expected);
         }

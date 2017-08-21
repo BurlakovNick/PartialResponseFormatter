@@ -19,7 +19,7 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestCreateForSimpleType()
         {
             var actual = ResponseSpecification.Create<SimpleType>();
-            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("A").Create());
+            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("a").Create());
         }
         
         public class ComplexType
@@ -53,19 +53,19 @@ namespace PartialResponseFormatter.Tests.Tests
         {
             var actual = ResponseSpecification.Create<ComplexType>();
             var expected = ResponseSpecification
-                .Field("A")
-                .Field("B")
-                .Field("C", _ => _.Field("X"))
-                .Field("D", _ => _.Field("X"))
-                .Field("E", _ => _.Field("X"))
-                .Field("F")
-                .Field("G")
-                .Field("H")
-                .Field("I")
-                .Field("J")
-                .Field("K", _ => _
-                    .Field("W")
-                    .Field("Z", __ => __.Field("X"))
+                .Field("a")
+                .Field("b")
+                .Field("c", _ => _.Field("x"))
+                .Field("d", _ => _.Field("x"))
+                .Field("e", _ => _.Field("x"))
+                .Field("f")
+                .Field("g")
+                .Field("h")
+                .Field("i")
+                .Field("j")
+                .Field("k", _ => _
+                    .Field("w")
+                    .Field("z", __ => __.Field("x"))
                 )
                 .Create();
 
@@ -90,14 +90,14 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestDictionaryOfNestedTypes()
         {
             var actual = ResponseSpecification.Create<Dictionary<Guid, NestedType>>();
-            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
+            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("x").Create());
         }
 
         [Test]
         public void TestDictionaryOfDictionaryOfNestedTypes()
         {
             var actual = ResponseSpecification.Create<Dictionary<Guid, Dictionary<string, NestedType>>>();
-            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
+            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("x").Create());
         }
 
         [Test]
@@ -111,14 +111,14 @@ namespace PartialResponseFormatter.Tests.Tests
         public void TestArrayOfNestedTypes()
         {
             var actual = ResponseSpecification.Create<NestedType[]>();
-            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
+            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("x").Create());
         }
 
         [Test]
         public void TestArrayOfArrayOfNestedTypes()
         {
             var actual = ResponseSpecification.Create<NestedType[][]>();
-            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
+            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("x").Create());
         }
 
         public class CustomNamesType
@@ -157,12 +157,12 @@ namespace PartialResponseFormatter.Tests.Tests
         {
             var actual = ResponseSpecification.Create<CustomNamesType>();
             var expected = ResponseSpecification
-                .Field("A")
-                .Field("B")
-                .Field("C")
+                .Field("a")
+                .Field("b")
+                .Field("c")
                 .Field("custom1")
-                .Field("E")
-                .Field("F")
+                .Field("e")
+                .Field("f")
                 .Field("custom2")
                 .Field("custom3")
                 .Field("custom4")
