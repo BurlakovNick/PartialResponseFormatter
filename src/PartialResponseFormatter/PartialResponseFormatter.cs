@@ -39,7 +39,6 @@ namespace PartialResponseFormatter
             }
         }
 
-        //todo: slow, i know. IL-code will arrive soon
         private static object TraverseObject(object obj, Field[] fields, ObjectTreeNode objectTreeNode)
         {
             if (fields.IsNullOrEmpty())
