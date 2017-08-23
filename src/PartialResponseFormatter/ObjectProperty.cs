@@ -17,7 +17,7 @@ namespace PartialResponseFormatter
         public string ResponseName { get; }
 
         //todo: some better name
-        public TreeNode Tree { get; set; }
+        public TreeNode Tree { get; }
 
         //todo: slow, i know. shall we emit some IL-code for this?
         public object GetValue(object obj)

@@ -7,6 +7,11 @@ namespace PartialResponseFormatter
 {
     internal static class ObjectTreeTraverser
     {
+        public static TreeNode Traverse<T>()
+        {
+            return Traverse(typeof(T));
+        }
+        
         //todo: caching?
         public static TreeNode Traverse(Type type)
         {

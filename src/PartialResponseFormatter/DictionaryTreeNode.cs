@@ -8,5 +8,6 @@
         }
         
         public TreeNode Items { get; }
+        public override NodeType Type => NodeType.Dictionary;
     }
 }

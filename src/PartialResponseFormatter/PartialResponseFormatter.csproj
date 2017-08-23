@@ -48,7 +48,8 @@
     <Compile Include="IPartialResponseFormatter.cs" />
     <Compile Include="IResponseSpecificationSerializer.cs" />
     <Compile Include="MapFromContractAttribute.cs" />
-    <Compile Include="MissingField.cs" />
+    <Compile Include="FieldMismatch.cs" />
+    <Compile Include="NodeType.cs" />
     <Compile Include="ObjectProperty.cs" />
     <Compile Include="ObjectTreeNode.cs" />
     <Compile Include="ObjectTreeTraverser.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="ResponseSpecification.cs" />
     <Compile Include="ResponseSpecificationBuilder.cs" />
     <Compile Include="ResponseSpecificationFactory.cs" />
+    <Compile Include="ResponseSpecificationMatcher.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="UrlParameterResponseSpecificationSerializer.cs" />
   </ItemGroup>

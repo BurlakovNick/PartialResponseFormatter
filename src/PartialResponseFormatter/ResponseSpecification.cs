@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 
 namespace PartialResponseFormatter
@@ -16,30 +15,34 @@ namespace PartialResponseFormatter
         public static ResponseSpecificationBuilder Field(
             string name,
             Func<ResponseSpecificationBuilder, ResponseSpecificationBuilder> innerFieldsFunc = null
-            )
+        )
         {
             return ResponseSpecificationFactory
                 .Create()
                 .Field(name, innerFieldsFunc);
         }
-        
+
         public static ResponseSpecification Create<T>()
         {
             return ResponseSpecificationFactory.Create<T>();
         }
 
-        public static bool CheckClientMatchesServer<TClientData, TServerData>(out MissingField[] missingFields)
+        public static bool CheckClientMatchesServer<TClientData, TServerData>(
+            out FieldMismatch[] fieldsMismatches)
         {
-            missingFields = new MissingField[0];
-            return missingFields.Length == 0;
+            //todo: write tests
+            fieldsMismatches = ResponseSpecificationMatcher.FindClientFieldMismatches<TClientData, TServerData>();
+            return fieldsMismatches.Length == 0;
         }
-        
-        public static bool CheckClientMatchesServer<TServerData>(ResponseSpecification clientResponseSpecification, out MissingField[] missingFields)
+
+        public static bool CheckClientMatchesServer<TServerData>(ResponseSpecification clientResponseSpecification,
+            out FieldMismatch[] fieldsMismatcher)
         {
-            missingFields = new MissingField[0];
-            return missingFields.Length == 0;
+            //todo: implement
+            fieldsMismatcher = new FieldMismatch[0];
+            return fieldsMismatcher.Length == 0;
         }
-        
+
         public static implicit operator Field[](ResponseSpecification specification)
         {
             return specification.Fields;

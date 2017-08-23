@@ -29,5 +29,7 @@ namespace PartialResponseFormatter
 
         public ObjectProperty FindProperty(string fieldName) =>
             propertiesMap.TryGetValue(fieldName, out var result) ? result : null;
+
+        public override NodeType Type => NodeType.Object;
     }
 }
