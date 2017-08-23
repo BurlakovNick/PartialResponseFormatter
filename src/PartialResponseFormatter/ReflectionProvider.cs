@@ -37,7 +37,7 @@ namespace PartialResponseFormatter
                     var customName = (string) jsonPropertyName.GetValue(jsonPropertyAttribute);
                     if (!string.IsNullOrEmpty(customName))
                     {
-                        return customName.ToLower();
+                        return customName;
                     }
                 }
             }
@@ -49,11 +49,11 @@ namespace PartialResponseFormatter
                 var customName = propertyAttribute.PropertyName;
                 if (!string.IsNullOrEmpty(customName))
                 {
-                    return customName.ToLower();
+                    return customName;
                 }
             }
 
-            return propertyInfo.Name.ToLower();
+            return propertyInfo.Name;
         }
     }
 }

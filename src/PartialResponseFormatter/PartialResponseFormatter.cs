@@ -59,9 +59,7 @@ namespace PartialResponseFormatter
                 var value = property.GetValue(obj);
 
                 var subfields = field.Fields;
-                //todo: clr name important for correct to object mapping, but response object is better for serialization
-                //todo: decisions, decions...
-                result.Add(property.ClrName, Traverse(value, subfields, property.Tree));
+                result.Add(property.ResponseName, Traverse(value, subfields, property.Tree));
             }
 
             return result;

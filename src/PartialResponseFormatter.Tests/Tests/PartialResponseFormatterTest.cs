@@ -83,21 +83,12 @@ namespace PartialResponseFormatter.Tests.Tests
                 {"item1", new ABClass{A = "a", B = "b"}},
                 {"item2", new ABClass{A = "aa", B = "bb"}}
             };
-            var actual = formatter.Format(dictionary, ResponseSpecification.Field("a"));
+            var actual = formatter.Format(dictionary, ResponseSpecification.Field("A"));
             var expected = new Dictionary<string, AClass>
             {
                 {"item1", new AClass{A = "a"}},
                 {"item2", new AClass{A = "aa"}}
             };
-            AssertExpectedContract(actual, expected);
-        }
-
-        [Test]
-        public void TestFormatPropertyNameCaseNotMatters()
-        {
-            var array = new {A = "a"};
-            var actual = formatter.Format(array, ResponseSpecification.Field("a"));
-            var expected = new {a = "a"};
             AssertExpectedContract(actual, expected);
         }
 
