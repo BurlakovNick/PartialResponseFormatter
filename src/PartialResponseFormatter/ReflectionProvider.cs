@@ -9,20 +9,22 @@ namespace PartialResponseFormatter
     {
         private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertiesByType = new ConcurrentDictionary<Type, PropertyInfo[]>();
 
-        public static object GetPropertyValue(object obj, string fieldName)
+        public static PropertyInfo[] GetProperties(Type type)
         {
-            if (obj == null || string.IsNullOrEmpty(fieldName))
-            {
-                return obj;
-            }
-            
-            var property = PropertiesByType
-                .GetOrAdd(obj.GetType(), t => t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                .FirstOrDefault(p => p.Name.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase));
-
-            return property?.GetValue(obj);
+            return PropertiesByType.GetOrAdd(type,
+                t => t
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => !p.GetCustomAttributes().Any(ShouldIgnoreAttribute))
+                    .ToArray()
+            );
         }
-        
+
+        private static bool ShouldIgnoreAttribute(Attribute attr)
+        {
+            return attr.GetType().Name == "JsonIgnoreAttribute" || attr is PartialResponseIgnoreAttribute;
+        }
+
+        //todo: caching
         public static string GetPropertyResponseName(PropertyInfo propertyInfo)
         {
             var customAttributes = propertyInfo.GetCustomAttributes().ToArray();

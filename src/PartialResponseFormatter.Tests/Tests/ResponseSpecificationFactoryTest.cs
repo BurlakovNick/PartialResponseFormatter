@@ -9,19 +9,18 @@ namespace PartialResponseFormatter.Tests.Tests
     [TestFixture]
     public class ResponseSpecificationFactoryTest
     {
-        
         public class SimpleType
         {
             public string A { get; set; }
         }
-        
+
         [Test]
         public void Test_Create_For_Simple_Type()
         {
             var actual = ResponseSpecification.Create<SimpleType>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("A").Create());
         }
-        
+
         public class ComplexType
         {
             public string A { get; set; }
@@ -124,34 +123,34 @@ namespace PartialResponseFormatter.Tests.Tests
         public class CustomNamesType
         {
             public string A { get; set; }
-            
+
             [JsonProperty]
             public string B { get; set; }
-            
+
             [JsonProperty(PropertyName = "")]
             public string C { get; set; }
-            
+
             [JsonProperty(PropertyName = "custom1")]
             public string D { get; set; }
 
             [PartialResponseProperty]
             public string E { get; set; }
-            
+
             [PartialResponseProperty(PropertyName = "")]
             public string F { get; set; }
-            
+
             [PartialResponseProperty(PropertyName = "custom2")]
             public string G { get; set; }
-            
+
             [JsonProperty(PropertyName = "")]
             [PartialResponseProperty(PropertyName = "custom3")]
             public string H { get; set; }
-            
+
             [JsonProperty(PropertyName = "custom4")]
             [PartialResponseProperty(PropertyName = "wrong")]
             public string I { get; set; }
         }
-        
+
         [Test]
         public void Test_Contract_With_Custom_Names()
         {
@@ -167,8 +166,26 @@ namespace PartialResponseFormatter.Tests.Tests
                 .Field("custom3")
                 .Field("custom4")
                 .Create();
-            
+
             actual.ShouldBeEquivalentTo(expected);
+        }
+
+        public class IgnoredPropertiesClass
+        {
+            public string A { get; set; }
+
+            [JsonIgnore]
+            public string B { get; set; }
+
+            [PartialResponseIgnore]
+            public string C { get; set; }
+        }
+
+        [Test]
+        public void Test_Contract_With_Ignored_Properties()
+        {
+            var actual = ResponseSpecification.Create<IgnoredPropertiesClass>();
+            actual.ShouldBeEquivalentTo(ResponseSpecification.Field("A").Create());
         }
     }
 }

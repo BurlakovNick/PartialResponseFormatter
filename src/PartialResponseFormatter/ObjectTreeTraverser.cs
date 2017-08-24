@@ -13,6 +13,7 @@ namespace PartialResponseFormatter
         }
         
         //todo: caching?
+        //todo: defense from cyclic things? what should we do?
         public static TreeNode Traverse(Type type)
         {
             if (IsSimpleType(type))
@@ -36,8 +37,7 @@ namespace PartialResponseFormatter
                 return TreeNode.Collection(Traverse(enumerableElementType));
             }
 
-            var properties = type
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var properties = ReflectionProvider.GetProperties(type)
                 .Select(p => new ObjectProperty(p, Traverse(p.PropertyType)))
                 .ToArray();
 

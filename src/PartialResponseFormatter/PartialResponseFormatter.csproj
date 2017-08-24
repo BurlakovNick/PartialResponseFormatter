@@ -54,6 +54,7 @@
     <Compile Include="ObjectTreeNode.cs" />
     <Compile Include="ObjectTreeTraverser.cs" />
     <Compile Include="PartialResponseFormatter.cs" />
+    <Compile Include="PartialResponseIgnoreAttribute.cs" />
     <Compile Include="PartialResponsePropertyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionProvider.cs" />
