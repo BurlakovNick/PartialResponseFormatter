@@ -16,7 +16,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
         
         [Test]
-        public void TestCreateForSimpleType()
+        public void Test_Create_For_Simple_Type()
         {
             var actual = ResponseSpecification.Create<SimpleType>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("A").Create());
@@ -49,7 +49,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestCreateForComplexType()
+        public void Test_Create_For_Complex_Type()
         {
             var actual = ResponseSpecification.Create<ComplexType>();
             var expected = ResponseSpecification
@@ -73,49 +73,49 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestInt()
+        public void Test_Int()
         {
             var actual = ResponseSpecification.Create<int>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Empty);
         }
 
         [Test]
-        public void TestDictionaryOfGuids()
+        public void Test_Dictionary_Of_Guids()
         {
             var actual = ResponseSpecification.Create<Dictionary<Guid, Guid>>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Empty);
         }
 
         [Test]
-        public void TestDictionaryOfNestedTypes()
+        public void Test_Dictionary_Of_Nested_Types()
         {
             var actual = ResponseSpecification.Create<Dictionary<Guid, NestedType>>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
         }
 
         [Test]
-        public void TestDictionaryOfDictionaryOfNestedTypes()
+        public void Test_Dictionary_Of_Dictionary_Of_Nested_Types()
         {
             var actual = ResponseSpecification.Create<Dictionary<Guid, Dictionary<string, NestedType>>>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
         }
 
         [Test]
-        public void TestArrayOfInt()
+        public void Test_Array_Of_Int()
         {
             var actual = ResponseSpecification.Create<int[]>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Empty);
         }
 
         [Test]
-        public void TestArrayOfNestedTypes()
+        public void Test_Array_Of_Nested_Types()
         {
             var actual = ResponseSpecification.Create<NestedType[]>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
         }
 
         [Test]
-        public void TestArrayOfArrayOfNestedTypes()
+        public void Test_Array_Of_Array_Of_Nested_Types()
         {
             var actual = ResponseSpecification.Create<NestedType[][]>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("X").Create());
@@ -153,7 +153,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
         
         [Test]
-        public void TestContractWithCustomNames()
+        public void Test_Contract_With_Custom_Names()
         {
             var actual = ResponseSpecification.Create<CustomNamesType>();
             var expected = ResponseSpecification

@@ -19,7 +19,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestFormatInt()
+        public void Test_Format_Int()
         {
             const int expected = 5;
             var actual = formatter.Format(expected, ResponseSpecification.Empty);
@@ -27,7 +27,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestFormatString()
+        public void Test_Format_String()
         {
             const string expected = "abacaba";
             var actual = formatter.Format(expected, ResponseSpecification.Empty);
@@ -35,21 +35,21 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestFormatNull()
+        public void Test_Format_Null()
         {
             var actual = formatter.Format(null, ResponseSpecification.Empty);
             actual.Should().BeNull();
         }
 
         [Test]
-        public void TestFormatEmptyArray()
+        public void Test_Format_Empty_Array()
         {
             var actual = formatter.Format(new string[0], ResponseSpecification.Empty);
             (actual as IEnumerable).Should().BeEmpty();
         }
 
         [Test]
-        public void TestFormatArray()
+        public void Test_Format_Array()
         {
             var array = new[] {new {A = "a", B = "b"}, new {A = "aa", B = "bb"}};
             var actual = formatter.Format(array, ResponseSpecification.Field("A"));
@@ -58,7 +58,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestFormatEmptyDictionary()
+        public void Test_Format_Empty_Dictionary()
         {
             var actual = formatter.Format(new Dictionary<string, string>(), ResponseSpecification.Empty);
             (actual as IDictionary).Should().BeEmpty();
@@ -76,7 +76,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
         
         [Test]
-        public void TestFormatDictionary()
+        public void Test_Format_Dictionary()
         {
             var dictionary = new Dictionary<string, ABClass>
             {
@@ -93,7 +93,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestFormatNested()
+        public void Test_Format_Nested()
         {
             var array = new {A = "a", B = "b", C = new {D = "d", E = "e"}};
             var actual = formatter.Format(array,
@@ -126,7 +126,7 @@ namespace PartialResponseFormatter.Tests.Tests
         }
 
         [Test]
-        public void TestFormatComplexObject()
+        public void Test_Format_Complex_Object()
         {
             var nested1 = new NestedTestContract
             {

@@ -11,7 +11,7 @@ namespace PartialResponseFormatter.Tests.Tests
     {
         [Test]
         [TestCaseSource(nameof(GenerateTestData))]
-        public void TestSerializeAndDeserialize(Field[] fields, string expectedSerialization)
+        public void Test_Serialize_And_Deserialize(Field[] fields, string expectedSerialization)
         {
             var expectedSpecification = new ResponseSpecification { Fields = fields};
             var serializer = new UrlParameterResponseSpecificationSerializer();
