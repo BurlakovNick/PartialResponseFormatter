@@ -12,7 +12,7 @@ namespace PartialResponseFormatter
         {
             var clientTree = ObjectTreeTraverser.Traverse<TClientData>();
             var serverTree = ObjectTreeTraverser.Traverse<TServerData>();
-            return FindClientFieldMismatches(clientTree, serverTree, "root.").ToArray();
+            return FindClientFieldMismatches(clientTree, serverTree, "root").ToArray();
         }
 
         private static IEnumerable<FieldMismatch> FindClientFieldMismatches(

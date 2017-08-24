@@ -30,7 +30,6 @@ namespace PartialResponseFormatter
         public static bool CheckClientMatchesServer<TClientData, TServerData>(
             out FieldMismatch[] fieldsMismatches)
         {
-            //todo: write tests
             fieldsMismatches = ResponseSpecificationMatcher.FindClientFieldMismatches<TClientData, TServerData>();
             return fieldsMismatches.Length == 0;
         }
