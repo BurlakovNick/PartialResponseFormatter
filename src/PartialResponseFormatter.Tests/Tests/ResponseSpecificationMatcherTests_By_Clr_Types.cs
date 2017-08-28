@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace PartialResponseFormatter.Tests.Tests
 {
     [TestFixture]
-    public class ResponseSpecificationMatcherTest
+    public class ResponseSpecificationMatcherTests_By_Clr_Types
     {
         [Test]
         public void Test_String_And_Int() => CheckMatches<string, int>();
@@ -48,7 +48,7 @@ namespace PartialResponseFormatter.Tests.Tests
         {
             public string A { get; set; }
         }
-        
+
         [Test]
         public void Test_Two_Equal_Classes() => CheckMatches<Simple_Class_1, Simple_Class_1>();
 
@@ -70,14 +70,14 @@ namespace PartialResponseFormatter.Tests.Tests
             public string[][] C { get; set; }
             public Nested_Class_1[] D { get; set; }
         }
-        
+
         public class Nested_Class_1
         {
             public string X { get; set; }
             public string Y { get; set; }
             public Dictionary<string, string> Z { get; set; }
         }
-        
+
         public class Complex_Class_2
         {
             public string AA { get; set; }
@@ -85,7 +85,7 @@ namespace PartialResponseFormatter.Tests.Tests
             public int[] C { get; set; }
             public Nested_Class_2[] D { get; set; }
         }
-        
+
         public class Nested_Class_2
         {
             public string X { get; set; }
@@ -101,8 +101,8 @@ namespace PartialResponseFormatter.Tests.Tests
                 "root.C.[list]",
                 "root.D.[list].Y",
                 "root.D.[list].Z"
-                );
-        
+            );
+
         private static void CheckMatches<T1, T2>()
         {
             FieldMismatch[] actual;

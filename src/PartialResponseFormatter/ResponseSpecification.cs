@@ -27,6 +27,9 @@ namespace PartialResponseFormatter
             return ResponseSpecificationFactory.Create<T>();
         }
 
+        /// <summary>
+        /// Use for a client validation when server contract is known as a CLR type
+        /// </summary>
         public static bool CheckClientMatchesServer<TClientData, TServerData>(
             out FieldMismatch[] fieldsMismatches)
         {
@@ -34,12 +37,14 @@ namespace PartialResponseFormatter
             return fieldsMismatches.Length == 0;
         }
 
+        /// <summary>
+        /// Use for a server validation when usually client expected CLR type is unknown
+        /// </summary>
         public static bool CheckClientMatchesServer<TServerData>(ResponseSpecification clientResponseSpecification,
-            out FieldMismatch[] fieldsMismatcher)
+            out FieldMismatch[] fieldsMismatches)
         {
-            //todo: implement
-            fieldsMismatcher = new FieldMismatch[0];
-            return fieldsMismatcher.Length == 0;
+            fieldsMismatches = ResponseSpecificationMatcher.FindClientFieldMismatches<TServerData>(clientResponseSpecification);
+            return fieldsMismatches.Length == 0;
         }
 
         public static implicit operator Field[](ResponseSpecification specification)
