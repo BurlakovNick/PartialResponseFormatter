@@ -8,15 +8,33 @@ namespace PartialResponseFormatter
     public static class ReflectionProvider
     {
         private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertiesByType = new ConcurrentDictionary<Type, PropertyInfo[]>();
+        private static readonly ConcurrentDictionary<PropertyInfo, string> ResponseNameByProperty = new ConcurrentDictionary<PropertyInfo, string>();
+        private static readonly ConcurrentDictionary<Type, Attribute[]> CustomAttributesByType = new ConcurrentDictionary<Type, Attribute[]>();
 
+        public static Attribute[] GetCustomAttributes(Type type)
+        {
+            return CustomAttributesByType.GetOrAdd(type, t => t.GetCustomAttributes().ToArray());
+        }
+
+        public static MapFromContractAttribute FindMapFromContractAttribute(Type type)
+        {
+            return GetCustomAttributes(type)
+                .FirstOrDefault(x => x.GetType() == typeof(MapFromContractAttribute)) as MapFromContractAttribute;
+        }
+        
         public static PropertyInfo[] GetProperties(Type type)
         {
             return PropertiesByType.GetOrAdd(type,
                 t => t
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => !p.GetCustomAttributes().Any(ShouldIgnoreAttribute))
+                    .Where(property => !property.GetCustomAttributes().Any(ShouldIgnoreAttribute))
                     .ToArray()
             );
+        }
+
+        public static string GetPropertyResponseName(PropertyInfo propertyInfo)
+        {
+            return ResponseNameByProperty.GetOrAdd(propertyInfo, CalculatePropertyResponseName(propertyInfo));
         }
 
         private static bool ShouldIgnoreAttribute(Attribute attr)
@@ -24,8 +42,7 @@ namespace PartialResponseFormatter
             return attr.GetType().Name == "JsonIgnoreAttribute" || attr is PartialResponseIgnoreAttribute;
         }
 
-        //todo: caching
-        public static string GetPropertyResponseName(PropertyInfo propertyInfo)
+        private static string CalculatePropertyResponseName(PropertyInfo propertyInfo)
         {
             var customAttributes = propertyInfo.GetCustomAttributes().ToArray();
             var jsonPropertyAttribute = customAttributes.FirstOrDefault(a => a.GetType().Name == "JsonPropertyAttribute");
@@ -44,10 +61,11 @@ namespace PartialResponseFormatter
                 }
             }
 
-            var partialResponsePropertyAttribute = customAttributes.FirstOrDefault(a => a.GetType() == typeof(PartialResponsePropertyAttribute));
+            var partialResponsePropertyAttribute =
+                customAttributes.FirstOrDefault(a => a.GetType() == typeof(PartialResponsePropertyAttribute));
             if (partialResponsePropertyAttribute != null)
             {
-                var propertyAttribute = (PartialResponsePropertyAttribute)partialResponsePropertyAttribute;
+                var propertyAttribute = (PartialResponsePropertyAttribute) partialResponsePropertyAttribute;
                 var customName = propertyAttribute.PropertyName;
                 if (!string.IsNullOrEmpty(customName))
                 {

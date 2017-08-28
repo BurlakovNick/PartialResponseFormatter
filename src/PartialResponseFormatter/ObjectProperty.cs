@@ -16,7 +16,6 @@ namespace PartialResponseFormatter
         public string ClrName => property.Name;
         public string ResponseName { get; }
 
-        //todo: some better name
         public TreeNode Tree { get; }
 
         //todo: slow, i know. shall we emit some IL-code for this?
