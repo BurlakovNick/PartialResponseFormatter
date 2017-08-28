@@ -28,6 +28,22 @@ namespace PartialResponseFormatter
         }
 
         /// <summary>
+        /// Use for a client validation. Server contract is determined automatically by MapFromContractAttribute
+        /// </summary>
+        public static bool CheckClientMatchesServer<TClientData>(out FieldMismatch[] fieldMismatches)
+        {
+            var mapFromContractAttribute = ReflectionProvider.FindMapFromContractAttribute(typeof(TClientData));
+            if (mapFromContractAttribute == null)
+            {
+                var message = $"Type {typeof(TClientData)} should have {nameof(MapFromContractAttribute)} attribute";
+                throw new InvalidOperationException(message);
+            }
+            var serverType = mapFromContractAttribute.DataContractType;
+            fieldMismatches = ResponseSpecificationMatcher.FindClientFieldMismatches(typeof(TClientData), serverType);
+            return fieldMismatches.Length == 0;
+        }
+        
+        /// <summary>
         /// Use for a client validation when server contract is known as a CLR type
         /// </summary>
         public static bool CheckClientMatchesServer<TClientData, TServerData>(

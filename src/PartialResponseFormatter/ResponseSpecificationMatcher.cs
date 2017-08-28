@@ -15,6 +15,13 @@ namespace PartialResponseFormatter
             var serverTree = ObjectTreeTraverser.Traverse<TServerData>();
             return FindClientFieldMismatches(clientTree, serverTree, "root").ToArray();
         }
+        
+        public static FieldMismatch[] FindClientFieldMismatches(Type clientDataType, Type serverDataType)
+        {
+            var clientTree = ObjectTreeTraverser.Traverse(clientDataType);
+            var serverTree = ObjectTreeTraverser.Traverse(serverDataType);
+            return FindClientFieldMismatches(clientTree, serverTree, "root").ToArray();
+        }
 
         public static FieldMismatch[] FindClientFieldMismatches<TServerData>(ResponseSpecification clientResponseSpecification)
         {

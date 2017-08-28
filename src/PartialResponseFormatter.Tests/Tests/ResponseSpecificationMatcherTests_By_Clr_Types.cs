@@ -59,10 +59,6 @@ namespace PartialResponseFormatter.Tests.Tests
         public void Test_Two_Almost_Equivalent_Classes_When_Server_Has_No_Field() =>
             CheckNotMatches<Simple_Class_1, Simple_Class_Without_One_Property>("root.B");
 
-        [Test]
-        public void Test_Two_Almost_Equivalent_Classes_When_Client_Has_No_Field() =>
-            CheckMatches<Simple_Class_Without_One_Property, Simple_Class_1>();
-
         public class Complex_Class_1
         {
             public string A { get; set; }
@@ -102,11 +98,41 @@ namespace PartialResponseFormatter.Tests.Tests
                 "root.D.[list].Y",
                 "root.D.[list].Z"
             );
+        
+        [MapFromContract(typeof(ServerClass))]
+        public class WrongClientClass
+        {
+            public string A { get; set; }
+        }
+        
+        [MapFromContract(typeof(ServerClass))]
+        public class RightClientClass
+        {
+            public string B { get; set; }
+        }
+        
+        public class ServerClass
+        {
+            public string B { get; set; }
+        }
 
+        [Test]
+        public void Test_Matches_When_Match_By_Attribute() => CheckMatchesByAttribute<RightClientClass>();
+
+        [Test]
+        public void Test_Not_Matches_When_Match_By_Attribute() => CheckNotMatchesByAttribute<WrongClientClass>("root.A");
+        
         private static void CheckMatches<T1, T2>()
         {
             FieldMismatch[] actual;
             ResponseSpecification.CheckClientMatchesServer<T1, T2>(out actual).Should().BeTrue();
+            actual.Should().BeEmpty();
+        }
+        
+        private static void CheckMatchesByAttribute<TClientData>()
+        {
+            FieldMismatch[] actual;
+            ResponseSpecification.CheckClientMatchesServer<TClientData>(out actual).Should().BeTrue();
             actual.Should().BeEmpty();
         }
 
@@ -114,6 +140,14 @@ namespace PartialResponseFormatter.Tests.Tests
         {
             FieldMismatch[] actual;
             ResponseSpecification.CheckClientMatchesServer<T1, T2>(out actual).Should().BeFalse();
+            var expected = paths.Select(p => new FieldMismatch(p, string.Empty)).ToArray();
+            actual.ShouldAllBeEquivalentTo(expected, opt => opt.Excluding(x => x.Message));
+        }
+        
+        private static void CheckNotMatchesByAttribute<TClientData>(params string[] paths)
+        {
+            FieldMismatch[] actual;
+            ResponseSpecification.CheckClientMatchesServer<TClientData>(out actual).Should().BeFalse();
             var expected = paths.Select(p => new FieldMismatch(p, string.Empty)).ToArray();
             actual.ShouldAllBeEquivalentTo(expected, opt => opt.Excluding(x => x.Message));
         }
