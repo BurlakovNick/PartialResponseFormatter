@@ -5,7 +5,8 @@ using System.Text;
 
 namespace PartialResponseFormatter
 {
-    //todo: to string builder
+    //todo: move to string builder, if benchmark will be slow
+    //todo: usually clients will send stable collection of specifications, so no much memory pressure (strings will be interned)
     public class UrlParameterResponseSpecificationSerializer : IResponseSpecificationSerializer
     {
         public string Serialize(ResponseSpecification specification)
@@ -38,7 +39,7 @@ namespace PartialResponseFormatter
         private Field[] Deserialize(string[] tokens, ref int position)
         {
             var fields = new List<Field>();
-            for (;position < tokens.Length; )
+            for (; position < tokens.Length;)
             {
                 while (position < tokens.Length && tokens[position] == ";")
                 {
@@ -50,7 +51,7 @@ namespace PartialResponseFormatter
                     position++;
                     break;
                 }
-                
+
                 var name = tokens[position++];
                 if (HasSubfields(tokens, position))
                 {
@@ -89,7 +90,6 @@ namespace PartialResponseFormatter
             position++;
         }
 
-        //todo: need strong types
         private string[] Tokenize(string specificationString)
         {
             var tokens = new List<string>();
@@ -100,7 +100,7 @@ namespace PartialResponseFormatter
                 {
                     if (currentToken.Length > 0)
                     {
-                        tokens.Add(currentToken.ToString());                        
+                        tokens.Add(currentToken.ToString());
                     }
                     tokens.Add(character.ToString());
                     currentToken.Clear();
@@ -112,9 +112,11 @@ namespace PartialResponseFormatter
 
             if (currentToken.Length > 0)
             {
-                tokens.Add(currentToken.ToString());                
+                tokens.Add(currentToken.ToString());
             }
-            return tokens.Concat(new [] {")"}).ToArray();
+
+            //note: special symbol to stop parse current fields collection (on root level)
+            return tokens.Concat(new[] {")"}).ToArray();
         }
     }
 }
