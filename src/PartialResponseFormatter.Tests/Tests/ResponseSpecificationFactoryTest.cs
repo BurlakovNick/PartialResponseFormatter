@@ -187,5 +187,49 @@ namespace PartialResponseFormatter.Tests.Tests
             var actual = ResponseSpecification.Create<IgnoredPropertiesClass>();
             actual.ShouldBeEquivalentTo(ResponseSpecification.Field("A").Create());
         }
+
+        [Test]
+        public void Test_Duplicate_Field_Names_When_Explicit_Specification_Building()
+        {
+            Assert.Throws<InvalidOperationException>(
+                () =>
+                    ResponseSpecification
+                        .Field("A")
+                        .Field("A")
+                        .Create()
+            );
+        }
+        
+        public class ClassWithDuplicateFieldName
+        {
+            public string A { get; set; }
+
+            [PartialResponseProperty(PropertyName = "A")]
+            public string B { get; set; }
+        }
+
+        [Test]
+        public void Test_Duplicate_Field_Names_When_Implicit_Specification_Building()
+        {
+            Assert.Throws<InvalidOperationException>(() => ResponseSpecification.Create<ClassWithDuplicateFieldName>());
+        }
+
+        public class CyclicDependencyRoot
+        {
+            public string A { get; set; }
+            public CyclicDependencyLeaf CyclicDependencyLeaf { get; set; }
+        }
+        
+        public class CyclicDependencyLeaf
+        {
+            public string B { get; set; }
+            public CyclicDependencyRoot CyclicDependencyRoot { get; set; }
+        }
+        
+        [Test]
+        public void Test_Cyclic_Dependency()
+        {
+            Assert.Throws<InvalidOperationException>(() => ResponseSpecification.Create<CyclicDependencyRoot>());
+        }
     }
 }

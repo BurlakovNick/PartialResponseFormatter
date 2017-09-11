@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,65 +8,63 @@ namespace PartialResponseFormatter
 {
     internal static class ObjectTreeTraverser
     {
+        private static readonly ConcurrentDictionary<Type, TreeNode> TreeNodesByType = new ConcurrentDictionary<Type, TreeNode>();
+        
         public static TreeNode Traverse<T>()
         {
             return Traverse(typeof(T));
         }
         
-        //todo: caching?
-        //todo: defense from cyclic things? what should we do?
         public static TreeNode Traverse(Type type)
+        {
+            var traverseStack = new Stack<Type>();
+            return TraverseWithCaching(type, traverseStack);
+        }
+
+        private static TreeNode TraverseWithCaching(Type type, Stack<Type> traverseStack)
+        {
+            if (TreeNodesByType.TryGetValue(type, out var treeNode))
+            {
+                return treeNode;
+            }
+            
+            if (traverseStack.Contains(type))
+            {
+                var traversePath = string.Join(",", traverseStack.Select(x => x.Name));
+                throw new InvalidOperationException($"Cyclic dependency found while tree traversing. " +
+                                                    $"Looping type: {type.Name}. " +
+                                                    $"Traversing stack: {traversePath}");
+            }
+            traverseStack.Push(type);
+            var result = TreeNodesByType.GetOrAdd(type, t => TraverseWithoutCaching(t, traverseStack));
+            traverseStack.Pop();
+            return result;
+        }
+
+        private static TreeNode TraverseWithoutCaching(Type type, Stack<Type> traverseStack)
         {
             if (IsSimpleType(type))
             {
                 return TreeNode.Empty;
             }
-            
-            var dictionaryInterface = FindDictionaryInterface(type);
-            if (dictionaryInterface != null)
+
+            if (ReflectionProvider.TryGetDictionaryValueType(type, out var valueType))
             {
-                var arguments = dictionaryInterface.GetGenericArguments();
-                var dictionaryValueType = arguments[1];
-                return TreeNode.Dictionary(Traverse(dictionaryValueType));
+                return TreeNode.Dictionary(TraverseWithCaching(valueType, traverseStack));
             }
-            
-            var enumerableInterface = FindEnumerableInterface(type);
-            if (enumerableInterface != null)
+
+            if (ReflectionProvider.TryGetEnumerableElementType(type, out var elementType))
             {
-                var arguments = enumerableInterface.GetGenericArguments();
-                var enumerableElementType = arguments[0];
-                return TreeNode.Collection(Traverse(enumerableElementType));
+                return TreeNode.Collection(TraverseWithCaching(elementType, traverseStack));
             }
 
             var properties = ReflectionProvider.GetProperties(type)
-                .Select(p => new ObjectProperty(p, Traverse(p.PropertyType)))
+                .Select(p => new ObjectProperty(p, TraverseWithCaching(p.PropertyType, traverseStack)))
                 .ToArray();
 
             return TreeNode.Object(properties);
         }
 
-        //todo: optimize all reflection
-        private static Type FindDictionaryInterface(Type type)
-        {
-            var interfaces = type.GetInterfaces();
-
-            return interfaces
-                .FirstOrDefault(x => x.IsGenericType &&
-                                     x.GetGenericTypeDefinition() == typeof(IDictionary<,>)
-                );
-        }
-        
-        //todo: optimize all reflection
-        private static Type FindEnumerableInterface(Type type)
-        {
-            var interfaces = type.GetInterfaces();
-
-            return interfaces
-                .FirstOrDefault(x => x.IsGenericType &&
-                                     x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-                );
-        }
-        
         private static bool IsSimpleType(Type type)
         {
             return type == typeof(string) ||

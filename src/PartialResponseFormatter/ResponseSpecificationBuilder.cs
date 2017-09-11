@@ -65,7 +65,12 @@ namespace PartialResponseFormatter
                 currentBuilder = currentBuilder.parentBuilder;
             }
 
-            //todo: validate duplicates
+            if (fields.GroupBy(x => x.Name).Any(x => x.Count() > 1))
+            {
+                var duplicates = fields.GroupBy(x => x.Name).Where(x => x.Count() > 1).Select(x => x.Key);
+                throw new InvalidOperationException($"Duplicate field names found: {string.Join(",", duplicates)}");
+            }
+            
             fields.Reverse();
             
             return new ResponseSpecification
