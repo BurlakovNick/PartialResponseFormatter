@@ -48,6 +48,7 @@ namespace PartialResponseFormatter.Tests.UsageExample
                 return JsonConvert.SerializeObject(partialResponse);
             }
 
+            //todo: less specific example model
             private ServerProspectiveSaleModel Select(Guid saleId)
             {
                 return new ServerProspectiveSaleModel
