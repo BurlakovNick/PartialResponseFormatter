@@ -12,5 +12,5 @@ Library doesn't depend on any specific stack for building API (WebApi, ServiceSt
 - [x] Build partial response fields specification from attributes with reflection
 - [x] Fields mapping validation (when available response fields are known)
 - [x] Ad-hoc field specification serialization for passing as URL parameter
-- [ ] Fast response formatting with IL-code emitting
+- [x] Fast response formatting with IL-code emitting
 - [ ] Add dynamic objects support

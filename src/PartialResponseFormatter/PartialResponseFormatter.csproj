@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionTreeNode.cs" />
+    <Compile Include="DelegateGenerator.cs" />
     <Compile Include="DictionaryTreeNode.cs" />
     <Compile Include="EmptyTreeNode.cs" />
     <Compile Include="EnumerableExtentions.cs" />

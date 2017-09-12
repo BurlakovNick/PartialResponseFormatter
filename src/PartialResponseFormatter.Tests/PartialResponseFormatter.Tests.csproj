@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\DelegateGeneratorTest.cs" />
     <Compile Include="Tests\PartialResponseFormatterTest.cs" />
     <Compile Include="Tests\ResponseSpecificationFactoryTest.cs" />
     <Compile Include="Tests\ResponseSpecificationMatcherTests_By_Clr_Types.cs" />
